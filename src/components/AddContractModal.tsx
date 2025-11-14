@@ -133,6 +133,11 @@ export default function AddContractModal({ onClose, onSave, editContract, editIn
     const product = getProductByName(formData.assureur, productName);
     if (product) {
       setSelectedProduct(product);
+
+      // Set assureurs interroges based on comparative proposals
+      const interrogatedInsurers = [formData.assureur, ...product.comparativeProposals].slice(0, 4);
+      setAssureursInterroges(interrogatedInsurers);
+
       setFormData({
         ...formData,
         produit: productName,
@@ -299,22 +304,31 @@ export default function AddContractModal({ onClose, onSave, editContract, editIn
                   </label>
                 </div>
 
-                {/* Assureurs interrogés */}
-                {assureursInterroges.length > 0 && (
+                {/* Assureurs interrogés - Always visible after product selection */}
+                {formData.produit && (
                   <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-200/50 mt-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Assureurs interrogés
+                      Assureurs interrogés pour comparaison
                     </label>
                     <div className="flex flex-wrap gap-2">
-                      {assureursInterroges.map((assureur, index) => (
-                        <span
-                          key={index}
-                          className="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 rounded-full text-xs font-light"
-                        >
-                          {assureur}
+                      {assureursInterroges.length > 0 ? (
+                        assureursInterroges.map((assureur, index) => (
+                          <span
+                            key={index}
+                            className="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 rounded-full text-xs font-light"
+                          >
+                            {assureur}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="px-3 py-1.5 bg-white border border-blue-200 text-blue-700 rounded-full text-xs font-light">
+                          {formData.assureur}
                         </span>
-                      ))}
+                      )}
                     </div>
+                    <p className="mt-2 text-xs text-gray-500">
+                      Ces assureurs ont été consultés pour comparer les offres disponibles
+                    </p>
                   </div>
                 )}
               </div>

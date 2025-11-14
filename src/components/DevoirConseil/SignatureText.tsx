@@ -14,6 +14,55 @@ interface SignatureTextProps {
 }
 
 export default function SignatureText({ formData, contracts }: SignatureTextProps) {
+  const formatCurrency = (value: string) => {
+    if (!value || value === '') return null;
+    const numValue = parseFloat(value.replace(/[^\d.-]/g, ''));
+    if (isNaN(numValue)) return value;
+    return `${numValue.toLocaleString('fr-FR')} €`;
+  };
+
+  const renderFinancialDetails = (contract: any) => {
+    const details = [];
+
+    if (contract.montant_initial) {
+      details.push(`Montant initial: ${formatCurrency(contract.montant_initial)}`);
+    }
+
+    if (contract.versement_programme) {
+      details.push(`Versement programmé: ${formatCurrency(contract.versement_programme)}`);
+    }
+
+    if (contract.versement_initial) {
+      details.push(`Versement initial: ${formatCurrency(contract.versement_initial)}`);
+    }
+
+    if (contract.periodicite) {
+      details.push(`Périodicité: ${contract.periodicite}`);
+    }
+
+    if (contract.vp_optionnel) {
+      details.push(`VP: ${formatCurrency(contract.vp_optionnel)}`);
+    }
+
+    if (contract.vl) {
+      details.push(`VL: ${formatCurrency(contract.vl)}`);
+    }
+
+    if (contract.frais_versement) {
+      details.push(`Frais de versement: ${contract.frais_versement}%`);
+    }
+
+    if (contract.frais_chacun) {
+      details.push(`Frais: ${contract.frais_chacun}%`);
+    }
+
+    if (contract.frais_dossier) {
+      details.push(`Frais de dossier: ${formatCurrency(contract.frais_dossier)}`);
+    }
+
+    return details;
+  };
+
   return (
     <div className="text-sm text-gray-700 leading-relaxed space-y-2">
       <p>
@@ -40,14 +89,29 @@ export default function SignatureText({ formData, contracts }: SignatureTextProp
         Accepte expressément que les contrats suivants soient souscrits:
       </p>
       {contracts.length > 0 && (
-        <ul className="list-disc list-inside space-y-1 ml-4">
-          {contracts.map((contract, index) => (
-            <li key={index}>
-              <span className="font-medium text-blue-600">{contract.gamme_contrat}</span> auprès de{' '}
-              <span className="font-medium text-blue-600">{contract.assureur}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="ml-4 space-y-3">
+          {contracts.map((contract, index) => {
+            const financialDetails = renderFinancialDetails(contract);
+            return (
+              <div key={index} className="border-l-2 border-blue-300 pl-4 py-1">
+                <p>
+                  <span className="font-medium text-blue-600">
+                    {contract.produit || contract.gamme_contrat}
+                  </span>{' '}
+                  auprès de{' '}
+                  <span className="font-medium text-blue-600">{contract.assureur}</span>
+                </p>
+                {financialDetails.length > 0 && (
+                  <ul className="mt-1 space-y-0.5 text-xs text-gray-600">
+                    {financialDetails.map((detail, idx) => (
+                      <li key={idx} className="ml-4">• {detail}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
       <p className="mt-4">
         Fait à <span className="font-medium text-blue-600">{formData.ville || '___________'}</span>,

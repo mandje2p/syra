@@ -220,7 +220,7 @@ export default function Parametres({ onNotificationClick, notificationCount }: P
         </button>
       </header>
 
-      <div className="p-4 md:p-6 lg:p-8 max-w-5xl">
+      <div className="p-4 md:p-6 lg:p-8">
         <div className="glass-card p-4 md:p-6 lg:p-8 floating-shadow">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 mb-6 md:mb-8">
             <div className="flex-shrink-0 w-full md:w-auto flex flex-col items-center">
@@ -240,7 +240,7 @@ export default function Parametres({ onNotificationClick, notificationCount }: P
             </div>
 
             <div className="flex-1 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 <div>
                   <label className="block text-xs md:text-sm font-light text-gray-700 mb-2">
                     Prénom
@@ -307,78 +307,81 @@ export default function Parametres({ onNotificationClick, notificationCount }: P
           <div className="glass-card p-4 md:p-6 lg:p-8 floating-shadow mt-6">
             <h2 className="text-lg md:text-xl font-light text-gray-900 mb-6">Modifier le mot de passe</h2>
 
-            <div className="space-y-6 max-w-xl">
-              <div>
-                <label className="block text-xs md:text-sm font-light text-gray-700 mb-2">
-                  Mot de passe actuel
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    value={passwordData.currentPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
-                    className="w-full pl-10 pr-12 py-2.5 bg-white border border-gray-200 rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light transition-all"
-                    placeholder="Entrez votre mot de passe actuel"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+                <div>
+                  <label className="block text-xs md:text-sm font-light text-gray-700 mb-2">
+                    Mot de passe actuel
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                      className="w-full pl-10 pr-12 py-2.5 bg-white border border-gray-200 rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light transition-all"
+                      placeholder="Entrez votre mot de passe actuel"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs md:text-sm font-light text-gray-700 mb-2">
+                    Nouveau mot de passe
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type={showNewPassword ? 'text' : 'password'}
+                      value={passwordData.newPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                      className="w-full pl-10 pr-12 py-2.5 bg-white border border-gray-200 rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light transition-all"
+                      placeholder="Entrez votre nouveau mot de passe"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNewPassword(!showNewPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs md:text-sm font-light text-gray-700 mb-2">
+                    Confirmer le nouveau mot de passe
+                  </label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={passwordData.confirmPassword}
+                      onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                      className="w-full pl-10 pr-12 py-2.5 bg-white border border-gray-200 rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light transition-all"
+                      placeholder="Confirmez votre nouveau mot de passe"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs md:text-sm font-light text-gray-700 mb-2">
-                  Nouveau mot de passe
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type={showNewPassword ? 'text' : 'password'}
-                    value={passwordData.newPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                    className="w-full pl-10 pr-12 py-2.5 bg-white border border-gray-200 rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light transition-all"
-                    placeholder="Entrez votre nouveau mot de passe"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-                <p className="text-xs text-gray-500 font-light mt-1.5">
-                  Minimum 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-xs md:text-sm font-light text-gray-700 mb-2">
-                  Confirmer le nouveau mot de passe
-                </label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={passwordData.confirmPassword}
-                    onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
-                    className="w-full pl-10 pr-12 py-2.5 bg-white border border-gray-200 rounded-2xl text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light transition-all"
-                    placeholder="Confirmez votre nouveau mot de passe"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
+              <p className="text-xs text-gray-500 font-light">
+                Minimum 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial
+              </p>
 
               {passwordError && (
                 <div className="p-3 bg-red-50 border border-red-200 rounded-2xl">
@@ -416,7 +419,7 @@ export default function Parametres({ onNotificationClick, notificationCount }: P
           <div className="glass-card p-4 md:p-6 lg:p-8 floating-shadow mt-6">
             <h2 className="text-lg md:text-xl font-light text-gray-900 mb-6">Synchronisation Google</h2>
 
-            <div className="space-y-6 max-w-xl">
+            <div className="space-y-6">
               <p className="text-sm text-gray-600 font-light">
                 Synchronisez votre compte Google pour connecter votre Gmail et votre Google Agenda avec l'application.
               </p>
@@ -508,7 +511,7 @@ export default function Parametres({ onNotificationClick, notificationCount }: P
             <div className="glass-card p-4 md:p-6 lg:p-8 floating-shadow mt-6">
               <h2 className="text-lg md:text-xl font-light text-gray-900 mb-6">Personnalisation du CRM</h2>
 
-              <div className="space-y-6 max-w-4xl">
+              <div className="space-y-6">
                 <p className="text-sm text-gray-600 font-light">
                   Personnalisez les logos du CRM pour tous les utilisateurs de l'organisation.
                 </p>

@@ -93,6 +93,12 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
   const [currentDate, setCurrentDate] = useState(new Date());
   const [draggedAppointment, setDraggedAppointment] = useState<any>(null);
   const [appointments, setAppointments] = useState(getInitialAppointments());
+  const [showConflictModal, setShowConflictModal] = useState(false);
+  const [conflictInfo, setConflictInfo] = useState<{
+    newAppointment: any;
+    conflictingAppointment: any;
+    newDate: Date;
+  } | null>(null);
 
   const availableUsers = [
     { id: '1', name: 'Marie Dubois' },
@@ -132,6 +138,92 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
         ? prev.filter(id => id !== calendarId)
         : [...prev, calendarId]
     );
+  };
+
+  const checkTimeConflict = (newApt: any, newDate: Date, newTime: string) => {
+    const newStartMinutes = parseTimeToMinutes(newTime);
+    const newEndMinutes = newStartMinutes + newApt.duration;
+
+    return appointments.find(apt => {
+      if (apt.id === newApt.id) return false;
+
+      const aptDate = apt.date instanceof Date ? apt.date : new Date(apt.date);
+      if (aptDate.getDate() !== newDate.getDate() ||
+          aptDate.getMonth() !== newDate.getMonth() ||
+          aptDate.getFullYear() !== newDate.getFullYear()) {
+        return false;
+      }
+
+      const aptStartMinutes = parseTimeToMinutes(apt.time);
+      const aptEndMinutes = aptStartMinutes + apt.duration;
+
+      return (newStartMinutes >= aptStartMinutes && newStartMinutes < aptEndMinutes) ||
+             (newEndMinutes > aptStartMinutes && newEndMinutes <= aptEndMinutes) ||
+             (newStartMinutes <= aptStartMinutes && newEndMinutes >= aptEndMinutes);
+    });
+  };
+
+  const handleDragStart = (apt: any) => {
+    setDraggedAppointment(apt);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (targetDate: Date) => {
+    if (!draggedAppointment) return;
+
+    const conflict = checkTimeConflict(draggedAppointment, targetDate, draggedAppointment.time);
+
+    if (conflict) {
+      setConflictInfo({
+        newAppointment: draggedAppointment,
+        conflictingAppointment: conflict,
+        newDate: targetDate
+      });
+      setShowConflictModal(true);
+    } else {
+      setAppointments(prev => prev.map(apt =>
+        apt.id === draggedAppointment.id
+          ? { ...apt, date: targetDate }
+          : apt
+      ));
+    }
+
+    setDraggedAppointment(null);
+  };
+
+  const handleConflictConfirm = () => {
+    if (!conflictInfo) return;
+
+    setAppointments(prev => prev.map(apt =>
+      apt.id === conflictInfo.newAppointment.id
+        ? { ...apt, date: conflictInfo.newDate }
+        : apt
+    ));
+
+    setShowConflictModal(false);
+    setConflictInfo(null);
+  };
+
+  const handleConflictDelay = () => {
+    if (!conflictInfo) return;
+
+    const conflictEndMinutes = parseTimeToMinutes(conflictInfo.conflictingAppointment.time) +
+                               conflictInfo.conflictingAppointment.duration + 10;
+    const newHour = Math.floor(conflictEndMinutes / 60);
+    const newMinute = conflictEndMinutes % 60;
+    const newTime = `${String(newHour).padStart(2, '0')}:${String(newMinute).padStart(2, '0')}`;
+
+    setAppointments(prev => prev.map(apt =>
+      apt.id === conflictInfo.newAppointment.id
+        ? { ...apt, date: conflictInfo.newDate, time: newTime }
+        : apt
+    ));
+
+    setShowConflictModal(false);
+    setConflictInfo(null);
   };
 
   const handleDoubleClick = (date: Date, hour?: number) => {
@@ -185,15 +277,7 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
     console.log(`Suppression du rendez-vous ${appointmentId}`);
   };
 
-  const handleDragStart = (apt: any) => {
-    setDraggedAppointment(apt);
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (hour: number, minute: number = 0, date?: Date) => {
+  const handleDropWithTime = (hour: number, minute: number = 0, date?: Date) => {
     if (draggedAppointment) {
       const newTime = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
@@ -403,9 +487,6 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
                   Mois
                 </button>
               </div>
-              <button className="hidden lg:flex px-5 py-2.5 text-sm font-light text-gray-700 bg-white/80 border border-gray-200 rounded-full hover:bg-white transition-all whitespace-nowrap">
-                Sync Agenda
-              </button>
               <button onClick={() => setShowAppointmentModal(true)} className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-light hover:from-blue-600 hover:to-blue-700 flex items-center gap-2 shadow-md transition-all hover:scale-105">
                 <Plus className="w-5 h-5" />
                 <span className="whitespace-nowrap">Ajouter RDV</span>
@@ -453,7 +534,7 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
                           const y = e.clientY - rect.top;
                           const quarterHeight = rect.height / 4;
                           const minute = Math.floor(y / quarterHeight) * 15;
-                          handleDrop(hour, minute);
+                          handleDropWithTime(hour, minute);
                         }}
                       >
                         {positionedAppointments
@@ -547,7 +628,7 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
                               const y = e.clientY - rect.top;
                               const quarterHeight = rect.height / 4;
                               const minute = Math.floor(y / quarterHeight) * 15;
-                              handleDrop(hour, minute, dayDate);
+                              handleDropWithTime(hour, minute, dayDate);
                             }}
                           >
                             {positionedAppointments
@@ -607,6 +688,13 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
                           handleDoubleClick(selectedDate);
                         }
                       }}
+                      onDragOver={handleDragOver}
+                      onDrop={() => {
+                        if (day) {
+                          const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                          handleDrop(targetDate);
+                        }
+                      }}
                     >
                       {day && (
                         <div className="h-full flex flex-col min-h-0 p-1.5">
@@ -626,7 +714,12 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
                               return (
                                 <div
                                   key={apt.id}
-                                  className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 px-1 py-0.5 rounded text-xs transition-colors"
+                                  draggable
+                                  onDragStart={(e) => {
+                                    e.stopPropagation();
+                                    handleDragStart(apt);
+                                  }}
+                                  className="flex items-center gap-1 cursor-move hover:bg-gray-100 px-1 py-0.5 rounded text-xs transition-colors"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleAppointmentClick(apt);
@@ -749,6 +842,52 @@ export default function Calendrier({ onNotificationClick, notificationCount }: C
           onEdit={handleEditAppointment}
           onDelete={handleDeleteAppointment}
         />
+      )}
+
+      {showConflictModal && conflictInfo && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="glass-card p-6 max-w-md w-full floating-shadow animate-scale-in">
+            <h3 className="text-xl font-light text-gray-900 mb-4">Conflit de rendez-vous</h3>
+            <p className="text-sm text-gray-600 font-light mb-6">
+              Un rendez-vous existe déjà sur ce créneau horaire :
+            </p>
+            <div className="bg-red-50 border border-red-200 rounded-2xl p-4 mb-6">
+              <div className="text-sm font-light text-gray-900 mb-1">
+                {conflictInfo.conflictingAppointment.title}
+              </div>
+              <div className="text-xs text-gray-600 font-light">
+                {conflictInfo.conflictingAppointment.time} - Durée : {conflictInfo.conflictingAppointment.duration} min
+              </div>
+            </div>
+            <p className="text-sm text-gray-600 font-light mb-6">
+              Que souhaitez-vous faire ?
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleConflictConfirm}
+                className="flex-1 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full text-sm font-light hover:from-blue-600 hover:to-blue-700 transition-all"
+              >
+                Confirmer quand même
+              </button>
+              <button
+                onClick={handleConflictDelay}
+                className="flex-1 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-full text-sm font-light hover:bg-gray-50 transition-all"
+              >
+                Décaler de 10 min
+              </button>
+              <button
+                onClick={() => {
+                  setShowConflictModal(false);
+                  setConflictInfo(null);
+                  setDraggedAppointment(null);
+                }}
+                className="flex-1 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-full text-sm font-light hover:bg-gray-50 transition-all"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

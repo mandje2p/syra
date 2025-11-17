@@ -1,5 +1,7 @@
-import { Bell, Send } from 'lucide-react';
+import { Bell, Send, Search } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { Lead } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface SimulationPERProps {
   onNotificationClick: () => void;
@@ -7,9 +9,10 @@ interface SimulationPERProps {
 }
 
 export default function SimulationPER({ onNotificationClick, notificationCount }: SimulationPERProps) {
-  const [advisorFirstName, setAdvisorFirstName] = useState('');
-  const [advisorLastName, setAdvisorLastName] = useState('');
-  const [advisorEmail, setAdvisorEmail] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Lead[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [clientFirstName, setClientFirstName] = useState('');
   const [clientLastName, setClientLastName] = useState('');
   const [clientEmail, setClientEmail] = useState('');
@@ -35,6 +38,41 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
   useEffect(() => {
     calculateTaxCeiling();
   }, [professionalStatus, annualIncome]);
+
+  useEffect(() => {
+    if (searchQuery.trim().length > 0) {
+      searchLeads(searchQuery);
+    } else {
+      setSearchResults([]);
+      setShowSearchResults(false);
+    }
+  }, [searchQuery]);
+
+  const searchLeads = async (query: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('leads')
+        .select('*')
+        .or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%,email.ilike.%${query}%`)
+        .limit(5);
+
+      if (error) throw error;
+      setSearchResults(data || []);
+      setShowSearchResults(true);
+    } catch (error) {
+      console.error('Error searching leads:', error);
+      setSearchResults([]);
+    }
+  };
+
+  const handleSelectLead = (lead: Lead) => {
+    setSelectedLead(lead);
+    setClientFirstName(lead.first_name);
+    setClientLastName(lead.last_name);
+    setClientEmail(lead.email || '');
+    setSearchQuery(`${lead.first_name} ${lead.last_name}`);
+    setShowSearchResults(false);
+  };
 
   useEffect(() => {
     calculateCapitals();
@@ -137,81 +175,48 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
       </header>
 
       <div className="px-4 md:px-6 lg:px-8 py-4 md:py-6 lg:py-8 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl p-6 border border-blue-200/50 shadow-md">
-            <h2 className="text-lg font-light text-gray-900 mb-4">Mon conseiller</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-light text-gray-700 mb-2">Nom</label>
-                <input
-                  type="text"
-                  value={advisorLastName}
-                  onChange={(e) => setAdvisorLastName(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-light text-gray-700 mb-2">Prénom</label>
-                <input
-                  type="text"
-                  value={advisorFirstName}
-                  onChange={(e) => setAdvisorFirstName(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-light text-gray-700 mb-2">Email</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">@</span>
-                  <input
-                    type="email"
-                    value={advisorEmail}
-                    onChange={(e) => setAdvisorEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
-                  />
-                </div>
-              </div>
+        <div className="glass-card p-6 floating-shadow">
+          <h2 className="text-lg font-light text-gray-900 mb-4">Rechercher un lead</h2>
+          <div className="search-container relative">
+            <div className="relative">
+              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => searchQuery && setShowSearchResults(true)}
+                placeholder="Rechercher un lead..."
+                className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-normal focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400"
+              />
             </div>
+            {showSearchResults && searchResults.length > 0 && (
+              <div className="absolute z-50 w-full mt-2 glass-card floating-shadow max-h-60 overflow-y-auto">
+                {searchResults.map((lead) => (
+                  <button
+                    key={lead.id}
+                    onClick={() => handleSelectLead(lead)}
+                    className="w-full px-4 py-3 text-left hover:bg-blue-50 transition-colors flex items-center justify-between border-b border-gray-100 last:border-b-0"
+                  >
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">{lead.first_name} {lead.last_name}</p>
+                      <p className="text-xs text-gray-500">{lead.email}</p>
+                    </div>
+                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded-full">{lead.status}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl p-6 border border-blue-200/50 shadow-md">
-            <h2 className="text-lg font-light text-gray-900 mb-4">Mon client</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-light text-gray-700 mb-2">Nom</label>
-                <input
-                  type="text"
-                  value={clientLastName}
-                  onChange={(e) => setClientLastName(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-light text-gray-700 mb-2">Prénom</label>
-                <input
-                  type="text"
-                  value={clientFirstName}
-                  onChange={(e) => setClientFirstName(e.target.value)}
-                  className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-light text-gray-700 mb-2">Email</label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg">@</span>
-                  <input
-                    type="email"
-                    value={clientEmail}
-                    onChange={(e) => setClientEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
-                  />
-                </div>
-              </div>
+          {selectedLead && (
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm font-medium text-gray-900 mb-1">Lead sélectionné:</p>
+              <p className="text-sm text-gray-700">{selectedLead.first_name} {selectedLead.last_name}</p>
+              {selectedLead.email && <p className="text-xs text-gray-600">{selectedLead.email}</p>}
             </div>
-          </div>
+          )}
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl p-8 border border-blue-200/50 shadow-md">
+        <div className="glass-card p-8 floating-shadow">
           <h2 className="text-2xl font-light text-gray-900 mb-2">
             Calculer le plafond de déductibilité de votre Plan Épargne Retraite individuel
           </h2>
@@ -223,7 +228,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-light text-gray-700 mb-3">Situation professionnelle</label>
-                <div className="flex gap-2 bg-white/60 rounded-full p-1 shadow-sm">
+                <div className="flex gap-2 bg-gray-100 rounded-full p-1">
                   <button
                     onClick={() => setProfessionalStatus('Salarié')}
                     className={`flex-1 px-6 py-2 rounded-full text-sm font-light transition-all ${
@@ -255,7 +260,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
                     type="number"
                     value={annualIncome || ''}
                     onChange={(e) => setAnnualIncome(parseFloat(e.target.value) || 0)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400 font-normal"
                     placeholder="0"
                   />
                 </div>
@@ -275,7 +280,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl p-8 border border-blue-200/50 shadow-md">
+        <div className="glass-card p-8 floating-shadow">
           <h2 className="text-2xl font-light text-gray-900 mb-2">Simuler mon Épargne Retraite</h2>
           <p className="text-sm font-light text-gray-700 mb-6">
             Découvrez en détails votre situation d'épargne à moyen et long terme lorsque vous optez pour le Plan Épargne Retraite.
@@ -327,7 +332,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
                 </svg>
               </div>
 
-              <div className="w-full max-w-md bg-white/80 rounded-2xl p-6 shadow-md space-y-3">
+              <div className="w-full max-w-md bg-white border border-gray-200 rounded-lg p-6 shadow-sm space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-light text-gray-700">Capital investi :</span>
                   <span className="text-sm font-medium text-gray-900">{formatCurrency(investedCapital)}</span>
@@ -355,14 +360,14 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
                     type="number"
                     value={monthlyContribution}
                     onChange={(e) => setMonthlyContribution(parseFloat(e.target.value) || 0)}
-                    className="w-full pl-10 pr-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
+                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400 font-normal"
                   />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-light text-gray-700 mb-3">Profil investisseur</label>
-                <div className="flex gap-2 bg-white/60 rounded-full p-1 shadow-sm">
+                <div className="flex gap-2 bg-gray-100 rounded-full p-1">
                   <button
                     onClick={() => setInvestorProfile('Prudent')}
                     className={`flex-1 px-4 py-2 rounded-full text-sm font-light transition-all ${
@@ -398,7 +403,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
 
               <div>
                 <label className="block text-sm font-light text-gray-700 mb-3">Situation maritale</label>
-                <div className="flex gap-2 bg-white/60 rounded-full p-1 shadow-sm">
+                <div className="flex gap-2 bg-gray-100 rounded-full p-1">
                   <button
                     onClick={() => setMaritalStatus('Célibataire, divorcé(e), veuf(ve)')}
                     className={`flex-1 px-4 py-2 rounded-full text-xs font-light transition-all ${
@@ -435,7 +440,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
                     background: `linear-gradient(to right, #1e40af 0%, #1e40af ${(numberOfChildren / 5) * 100}%, #e5e7eb ${(numberOfChildren / 5) * 100}%, #e5e7eb 100%)`
                   }}
                 />
-                <div className="mt-2 text-center bg-white/80 rounded-xl py-2 px-4 inline-block shadow-sm">
+                <div className="mt-2 text-center bg-white border border-gray-200 rounded-lg py-2 px-4 inline-block">
                   <span className="text-sm font-medium text-gray-900">{numberOfChildren} enfants</span>
                 </div>
               </div>
@@ -453,7 +458,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
                     background: `linear-gradient(to right, #1e40af 0%, #1e40af ${((age - 18) / (67 - 18)) * 100}%, #e5e7eb ${((age - 18) / (67 - 18)) * 100}%, #e5e7eb 100%)`
                   }}
                 />
-                <div className="mt-2 text-center bg-white/80 rounded-xl py-2 px-4 inline-block shadow-sm">
+                <div className="mt-2 text-center bg-white border border-gray-200 rounded-lg py-2 px-4 inline-block">
                   <span className="text-sm font-medium text-gray-900">{age} ans</span>
                 </div>
               </div>
@@ -464,14 +469,14 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
                   type="number"
                   value={taxableIncome || ''}
                   onChange={(e) => setTaxableIncome(parseFloat(e.target.value) || 0)}
-                  className="w-full px-4 py-3 bg-white/80 border border-white/50 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light shadow-sm"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400 font-normal"
                   placeholder="0"
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-light text-gray-700 mb-3">Taux imposition - Tranche impôts 2025</label>
-                <div className="flex gap-2 bg-white/60 rounded-full p-1 shadow-sm">
+                <div className="flex gap-2 bg-gray-100 rounded-full p-1">
                   {['0%', '11%', '30%', '41%', '45%'].map((rate) => (
                     <button
                       key={rate}
@@ -488,7 +493,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
                 </div>
               </div>
 
-              <div className="bg-white/80 rounded-2xl p-4 shadow-sm">
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-light text-gray-700">Économie fiscale totale :</span>
                   <span className="text-lg font-medium text-gray-900">{formatCurrency(totalTaxSavings)}</span>
@@ -498,7 +503,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl p-6 border border-blue-200/50 shadow-md">
+        <div className="glass-card p-6 floating-shadow">
           <p className="text-xs font-light text-gray-600 mb-4">
             * Valeurs indicatives : le profil prudent concerne les indépendants soucieux de la pérennité de leur épargne,
             le profil équilibré correspond à un équilibre entre performance financière et épargne sécurisée, le profil
@@ -507,7 +512,7 @@ export default function SimulationPER({ onNotificationClick, notificationCount }
           <div className="flex justify-center">
             <button
               onClick={handleSendEmail}
-              className="px-8 py-3 bg-gradient-to-r from-sky-400 to-sky-500 text-white rounded-full text-sm font-light hover:from-sky-500 hover:to-sky-600 shadow-lg transition-all hover:scale-105 flex items-center gap-2"
+              className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-2xl text-sm font-light hover:from-blue-600 hover:to-blue-700 shadow-md transition-all hover:scale-105 flex items-center gap-2"
             >
               <Send className="w-4 h-4" />
               Envoyer Par Mail

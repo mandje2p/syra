@@ -22,7 +22,7 @@ export default function Bibliotheque({ onNotificationClick, notificationCount, i
   const [canUpload, setCanUpload] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  const [uploadCategory, setUploadCategory] = useState<UploadCategory>('PER');
+  const [uploadCategory, setUploadCategory] = useState<UploadCategory>('Contrats');
 
   useEffect(() => {
     checkPermissionsAndLoad();
@@ -122,7 +122,7 @@ export default function Bibliotheque({ onNotificationClick, notificationCount, i
         <div>
           <h1 className="text-xl md:text-2xl font-light text-gray-900">Bibliothèque</h1>
           <p className="text-xs md:text-sm text-gray-500 font-light mt-1 hidden sm:block">
-            Gérez vos documents Contrats, Bienviyance et Prévoyance
+            Documents et ressources pour {activeTab}
           </p>
         </div>
         <button
@@ -153,38 +153,6 @@ export default function Bibliotheque({ onNotificationClick, notificationCount, i
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveTab('Contrats')}
-                  className={`px-4 py-2 text-sm font-light rounded-full transition-all ${
-                    activeTab === 'Contrats'
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                      : 'bg-white/80 text-gray-600 hover:bg-white'
-                  }`}
-                >
-                  Contrats ({contratsCount})
-                </button>
-                <button
-                  onClick={() => setActiveTab('Bienviyance')}
-                  className={`px-4 py-2 text-sm font-light rounded-full transition-all ${
-                    activeTab === 'Bienviyance'
-                      ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-md'
-                      : 'bg-white/80 text-gray-600 hover:bg-white'
-                  }`}
-                >
-                  Bienviyance ({bienviyanceCount})
-                </button>
-                <button
-                  onClick={() => setActiveTab('Prévoyance')}
-                  className={`px-4 py-2 text-sm font-light rounded-full transition-all ${
-                    activeTab === 'Prévoyance'
-                      ? 'bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md'
-                      : 'bg-white/80 text-gray-600 hover:bg-white'
-                  }`}
-                >
-                  Prévoyance ({prevoyanceCount})
-                </button>
-              </div>
               {canUpload && (
                 <div className="flex items-center gap-2">
                   <select
@@ -192,9 +160,8 @@ export default function Bibliotheque({ onNotificationClick, notificationCount, i
                     onChange={(e) => setUploadCategory(e.target.value as UploadCategory)}
                     className="px-3 py-2 bg-white border border-gray-200 rounded-full text-sm font-light focus:outline-none focus:ring-2 focus:ring-blue-400/50"
                   >
-                    <option value="PER">PER</option>
-                    <option value="Assurance Vie">Assurance Vie</option>
-                    <option value="Prévoyance">Prévoyance</option>
+                    <option value="Contrats">Contrats</option>
+                    <option value="Bienviyance">Bienviyance</option>
                   </select>
                   <button
                     onClick={() => setShowUploadModal(true)}

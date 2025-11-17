@@ -20,9 +20,9 @@ export default function UploadDocumentModal({
 }: UploadDocumentModalProps) {
 
   const mapUploadToStorageCategory = (upload: UploadCategory): DocumentCategory => {
-    if (upload === 'PER') return 'Contrats';
-    if (upload === 'Assurance Vie') return 'Prévoyance';
-    return 'Prévoyance';
+    if (upload === 'Contrats') return 'Contrats';
+    if (upload === 'Bienviyance') return 'Bienviyance';
+    return 'Contrats';
   };
   const [title, setTitle] = useState('');
   const [file, setFile] = useState<File | null>(null);

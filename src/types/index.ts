@@ -120,7 +120,7 @@ export interface PredefinedMessage {
 }
 
 export type DocumentCategory = 'Contrats' | 'Bienviyance' | 'Prévoyance';
-export type UploadCategory = 'PER' | 'Assurance Vie' | 'Prévoyance';
+export type UploadCategory = 'Contrats' | 'Bienviyance';
 
 export interface LibraryDocument {
   id: string;

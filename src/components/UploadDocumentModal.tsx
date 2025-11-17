@@ -19,7 +19,6 @@ export default function UploadDocumentModal({
   onSuccess,
 }: UploadDocumentModalProps) {
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState<DocumentCategory>(initialCategory);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -99,7 +98,7 @@ export default function UploadDocumentModal({
     }, 200);
 
     try {
-      await uploadDocument(file, title, category, userId, organizationId);
+      await uploadDocument(file, title, initialCategory, userId, organizationId);
       clearInterval(progressInterval);
       setProgress(100);
       setSuccess(true);
@@ -137,6 +136,15 @@ export default function UploadDocumentModal({
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
             <label className="block text-sm font-light text-gray-700 mb-2">
+              Catégorie
+            </label>
+            <div className="px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-2xl text-sm text-blue-700 font-light">
+              {initialCategory}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-light text-gray-700 mb-2">
               Titre du document *
             </label>
             <input
@@ -147,38 +155,6 @@ export default function UploadDocumentModal({
               disabled={uploading}
               className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light disabled:opacity-50"
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-light text-gray-700 mb-2">
-              Catégorie *
-            </label>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setCategory('PER')}
-                disabled={uploading}
-                className={`flex-1 px-4 py-2.5 text-sm font-light rounded-2xl border-2 transition-all disabled:opacity-50 ${
-                  category === 'PER'
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-                }`}
-              >
-                PER
-              </button>
-              <button
-                type="button"
-                onClick={() => setCategory('Assurance Vie')}
-                disabled={uploading}
-                className={`flex-1 px-4 py-2.5 text-sm font-light rounded-2xl border-2 transition-all disabled:opacity-50 ${
-                  category === 'Assurance Vie'
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
-                }`}
-              >
-                Assurance Vie
-              </button>
-            </div>
           </div>
 
           <div>

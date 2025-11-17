@@ -12,12 +12,11 @@ import SimulationPER from './components/SimulationPER';
 import Performance from './components/Performance';
 import Parametres from './components/Parametres';
 import Client from './components/Client';
-import Bibliotheque from './components/Bibliotheque';
+import BibliothequeContrats from './components/BibliothequeContrats';
+import BibliothequeBienviyance from './components/BibliothequeBienviyance';
 import NotificationsSidebar from './components/NotificationsSidebar';
 import Login from './components/Login';
 import { supabase } from './lib/supabase';
-import { Bell } from 'lucide-react';
-import { LibraryMainCategory } from './types';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -28,7 +27,6 @@ function App() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showPendingInClient, setShowPendingInClient] = useState(false);
   const [leadsFilter, setLeadsFilter] = useState<string | null>(null);
-  const [libraryCategory, setLibraryCategory] = useState<LibraryMainCategory>('Contrats');
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -87,8 +85,10 @@ function App() {
         return <Performance {...pageProps} />;
       case 'parametres':
         return <Parametres {...pageProps} />;
-      case 'bibliotheque':
-        return <Bibliotheque {...pageProps} initialCategory={libraryCategory} />;
+      case 'bibliotheque-contrats':
+        return <BibliothequeContrats {...pageProps} />;
+      case 'bibliotheque-bienviyance':
+        return <BibliothequeBienviyance {...pageProps} />;
       default:
         return <Dashboard {...pageProps} />;
     }
@@ -112,19 +112,7 @@ function App() {
         currentPage={currentPage}
         onNavigate={(page) => {
           setIsTransitioning(true);
-
-          if (page.includes('?category=')) {
-            const [basePage, query] = page.split('?');
-            const params = new URLSearchParams(query);
-            const category = params.get('category') as LibraryMainCategory;
-            if (category) {
-              setLibraryCategory(category);
-            }
-            setCurrentPage(basePage);
-          } else {
-            setCurrentPage(page);
-          }
-
+          setCurrentPage(page);
           setTimeout(() => {
             setIsTransitioning(false);
           }, 150);

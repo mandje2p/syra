@@ -115,8 +115,8 @@ export default function Sidebar({ currentPage, onNavigate, onCollapseChange, onL
   ] : [];
 
   const libraryItems = shouldShowLibrary ? [
-    { id: 'bibliotheque', label: 'Contrats', icon: FileText, category: 'Contrats' },
-    { id: 'bibliotheque', label: 'Bienviyance', icon: BookOpen, category: 'Bienviyance' },
+    { id: 'bibliotheque-contrats', label: 'Contrats', icon: FileText },
+    { id: 'bibliotheque-bienviyance', label: 'Bienviyance', icon: BookOpen },
   ] : [];
 
   const managementItems = [
@@ -372,16 +372,13 @@ export default function Sidebar({ currentPage, onNavigate, onCollapseChange, onL
                 </div>
               )}
               <div className="space-y-1 mb-4">
-                {libraryItems.map((item, index) => {
+                {libraryItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = currentPage === item.id;
                   return (
                     <button
-                      key={`${item.id}-${index}`}
-                      onClick={() => {
-                        const nav = item.category ? `${item.id}?category=${item.category}` : item.id;
-                        handleMobileNavigate(nav);
-                      }}
+                      key={item.id}
+                      onClick={() => handleMobileNavigate(item.id)}
                       className={`w-full flex items-center gap-3 px-4 py-3 text-sm rounded-2xl transition-all ${
                         isActive
                           ? 'bg-white/80 backdrop-blur-sm text-gray-900 shadow-md font-light'

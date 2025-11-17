@@ -24,6 +24,24 @@ export async function getAllDocuments(category?: DocumentCategory): Promise<Libr
   return data || [];
 }
 
+export async function getDocumentsBySubCategory(
+  category: DocumentCategory,
+  subCategory: ContractSubCategory
+): Promise<LibraryDocument[]> {
+  const { data, error } = await supabase
+    .from('library_documents')
+    .select('*')
+    .eq('category', category)
+    .eq('sub_category', subCategory)
+    .order('uploaded_at', { ascending: false });
+
+  if (error) {
+    throw new Error(`Erreur lors du chargement des documents: ${error.message}`);
+  }
+
+  return data || [];
+}
+
 export async function searchDocuments(searchTerm: string, category?: DocumentCategory): Promise<LibraryDocument[]> {
   let query = supabase
     .from('library_documents')

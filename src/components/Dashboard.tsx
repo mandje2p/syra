@@ -242,13 +242,11 @@ export default function Dashboard({ onNotificationClick, notificationCount, onNa
     try {
       setLoading(true);
       const profile = await getActiveProfile();
-      if (!profile) {
-        setLoading(false);
-        return;
+      if (profile) {
+        setCurrentUserId(profile.id);
       }
-      setCurrentUserId(profile.id);
 
-      const dbMemos = await getMemosByUser(profile.id);
+      const dbMemos = await getMemosByUser();
       const displayMemos: DisplayMemo[] = dbMemos.map(memo => ({
         id: memo.id,
         title: memo.title,

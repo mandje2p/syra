@@ -30,14 +30,19 @@ export async function createMemo(
   return data;
 }
 
-export async function getMemosByUser(userId: string): Promise<Memo[]> {
-  const { data, error } = await supabase
+export async function getMemosByUser(userId?: string): Promise<Memo[]> {
+  const query = supabase
     .from('memos')
     .select('*')
-    .eq('user_id', userId)
     .eq('status', 'pending')
     .order('due_date', { ascending: true })
     .order('due_time', { ascending: true });
+
+  if (userId) {
+    query.eq('user_id', userId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     throw new Error(`Erreur lors du chargement des mémos: ${error.message}`);

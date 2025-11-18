@@ -118,7 +118,7 @@ export function getProfilePermissions(profileType: string): ProfilePermissions {
         canAccessDashboard: false,
         canAccessLeads: false,
         canAccessClients: false,
-        canAccessAppointments: false,
+        canAccessAppointments: true,
         canAccessManagement: false,
         canAccessLibrary: true,
         canUploadLibraryDocuments: true,

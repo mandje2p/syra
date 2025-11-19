@@ -34,8 +34,8 @@ export default function ViewListLeadsModal({ onClose, listName, leads }: ViewLis
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[109]" onClick={onClose} />
-      <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 pointer-events-none">
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998]" onClick={onClose} />
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 pointer-events-none">
         <div className="bg-white dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-6xl border border-gray-200 dark:border-gray-700/50 pointer-events-auto max-h-[90vh] flex flex-col">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700/30 flex items-center justify-between flex-shrink-0">
             <div>

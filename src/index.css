@@ -8,6 +8,46 @@
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', system-ui, sans-serif;
     font-weight: 300;
   }
+
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    color: rgb(243 244 246);
+  }
+
+  .dark p {
+    color: rgb(209 213 219);
+  }
+
+  .dark label {
+    color: rgb(229 231 235);
+  }
+
+  .dark input,
+  .dark textarea,
+  .dark select {
+    background-color: rgb(31 41 55);
+    color: rgb(243 244 246);
+    border-color: rgb(55 65 81);
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: rgb(107 114 128);
+  }
+
+  .dark table th {
+    color: rgb(229 231 235);
+    background-color: rgb(31 41 55);
+  }
+
+  .dark table td {
+    color: rgb(209 213 219);
+    border-color: rgb(55 65 81);
+  }
 }
 
 @layer utilities {
@@ -20,6 +60,58 @@
 
   .glass-card-hover {
     @apply transition-all duration-300 hover:shadow-xl;
+  }
+
+  .dark .text-gray-900 {
+    color: rgb(243 244 246);
+  }
+
+  .dark .text-gray-800 {
+    color: rgb(229 231 235);
+  }
+
+  .dark .text-gray-700 {
+    color: rgb(209 213 219);
+  }
+
+  .dark .text-gray-600 {
+    color: rgb(156 163 175);
+  }
+
+  .dark .text-gray-500 {
+    color: rgb(156 163 175);
+  }
+
+  .dark .bg-white {
+    background-color: rgb(31 41 55);
+  }
+
+  .dark .bg-gray-50 {
+    background-color: rgb(17 24 39);
+  }
+
+  .dark .bg-gray-100 {
+    background-color: rgb(31 41 55);
+  }
+
+  .dark .border-gray-200 {
+    border-color: rgb(55 65 81);
+  }
+
+  .dark .border-gray-300 {
+    border-color: rgb(75 85 99);
+  }
+
+  .dark .hover\:bg-gray-50:hover {
+    background-color: rgb(31 41 55);
+  }
+
+  .dark .hover\:bg-gray-100:hover {
+    background-color: rgb(31 41 55);
+  }
+
+  .dark .divide-gray-200 > * + * {
+    border-color: rgb(55 65 81);
   }
 
   .slide-in-right {

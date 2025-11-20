@@ -1,4 +1,4 @@
-import { Search, Filter, CircleUser as UserCircle, List, Grid2x2 as Grid, LayoutGrid, ChevronRight, CalendarDays, Copy, Plus, MessageSquare, Globe, FileText, X, Bell, BellRing, User, Users } from 'lucide-react';
+import { Search, Filter, CircleUser as UserCircle, List, Grid2x2 as Grid, LayoutGrid, ChevronRight, CalendarDays, Copy, Plus, MessageSquare, Globe, FileText, X, Bell, BellRing } from 'lucide-react';
 import { useState } from 'react';
 import { Lead } from '../types';
 import ReminderModal from './ReminderModal';
@@ -578,9 +578,10 @@ interface LeadsProps {
   onNotificationClick: () => void;
   notificationCount: number;
   initialFilter?: string | null;
+  userRole: string;
 }
 
-export default function Leads({ onNotificationClick, notificationCount, initialFilter }: LeadsProps) {
+export default function Leads({ onNotificationClick, notificationCount, initialFilter, userRole }: LeadsProps) {
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('table');
   const [showFilters, setShowFilters] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<string>(initialFilter || 'Tous les statuts');
@@ -597,8 +598,8 @@ export default function Leads({ onNotificationClick, notificationCount, initialF
   const [editValue, setEditValue] = useState('');
   const [showStatusMenu, setShowStatusMenu] = useState<string | null>(null);
   const [leads, setLeads] = useState<Lead[]>(mockLeads);
-  const [leadViewMode, setLeadViewMode] = useState<'conseiller' | 'manager'>('conseiller');
   const [currentPage, setCurrentPage] = useState(1);
+  const isManagerOrAdmin = userRole === 'Admin' || userRole === 'Manager';
   const [selectedLeadForAppointment, setSelectedLeadForAppointment] = useState<Lead | null>(null);
   const [showAppointmentModalForLead, setShowAppointmentModalForLead] = useState(false);
   const leadsPerPage = 25;
@@ -703,20 +704,6 @@ export default function Leads({ onNotificationClick, notificationCount, initialF
           </select>
 
           <div className="flex items-center gap-2 md:gap-3 overflow-x-auto ml-auto">
-            <button
-              onClick={() => setLeadViewMode('conseiller')}
-              className={`w-9 h-9 rounded-full ${leadViewMode === 'conseiller' ? 'bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'} flex items-center justify-center transition-all hover:scale-105 flex-shrink-0 hidden md:flex`}
-              title="Vue Conseillère"
-            >
-              <User className="w-5 h-5 text-gray-900 dark:text-gray-300" />
-            </button>
-            <button
-              onClick={() => setLeadViewMode('manager')}
-              className={`w-9 h-9 rounded-full ${leadViewMode === 'manager' ? 'bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'} flex items-center justify-center transition-all hover:scale-105 flex-shrink-0 hidden md:flex`}
-              title="Vue Manager"
-            >
-              <Users className="w-5 h-5 text-gray-900 dark:text-gray-300" />
-            </button>
             <button
               className={`w-9 h-9 rounded-full ${viewMode === 'table' ? 'bg-white dark:bg-gray-800 shadow-md border border-gray-200 dark:border-gray-700' : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'} flex items-center justify-center transition-all hover:scale-105 flex-shrink-0`}
               onClick={() => setViewMode('table')}
@@ -861,7 +848,7 @@ export default function Leads({ onNotificationClick, notificationCount, initialF
           {viewMode === 'cards' ? (
             <div className="p-4 md:p-6 space-y-4">
             {paginatedLeads.map((lead) => (
-              <LeadCard key={lead.id} lead={lead} onUpdate={handleLeadUpdate} showOwner={leadViewMode === 'manager'} />
+              <LeadCard key={lead.id} lead={lead} onUpdate={handleLeadUpdate} showOwner={isManagerOrAdmin} />
             ))}
           </div>
           ) : (
@@ -875,7 +862,7 @@ export default function Leads({ onNotificationClick, notificationCount, initialF
                     <th className="px-6 py-4 text-left text-xs font-light text-gray-600 uppercase tracking-wider">Téléphone</th>
                     <th className="px-6 py-4 text-left text-xs font-light text-gray-600 uppercase tracking-wider">Email</th>
                     <th className="px-6 py-4 text-left text-xs font-light text-gray-600 uppercase tracking-wider">Statut</th>
-                    {leadViewMode === 'manager' && (
+                    {isManagerOrAdmin && (
                       <th className="px-6 py-4 text-left text-xs font-light text-gray-600 dark:text-gray-400 uppercase tracking-wider">Indicateur</th>
                     )}
                     <th className="px-6 py-4 text-left text-xs font-light text-gray-600 uppercase tracking-wider">Ville</th>
@@ -884,7 +871,7 @@ export default function Leads({ onNotificationClick, notificationCount, initialF
                     <th className="px-6 py-4 text-left text-xs font-light text-gray-600 uppercase tracking-wider">Imposition</th>
                     <th className="px-6 py-4 text-left text-xs font-light text-gray-600 uppercase tracking-wider">Résidence</th>
                     <th className="px-6 py-4 text-left text-xs font-light text-gray-600 uppercase tracking-wider">Code postal</th>
-                    {leadViewMode === 'manager' && (
+                    {isManagerOrAdmin && (
                       <th className="px-6 py-4 text-left text-xs font-light text-gray-600 uppercase tracking-wider">Statut mis à jour</th>
                     )}
                   </tr>
@@ -1011,7 +998,7 @@ export default function Leads({ onNotificationClick, notificationCount, initialF
                           </div>
                         )}
                       </td>
-                      {leadViewMode === 'manager' && (
+                      {isManagerOrAdmin && (
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm font-light text-gray-700">{lead.owner || '-'}</span>
                         </td>
@@ -1038,7 +1025,7 @@ export default function Leads({ onNotificationClick, notificationCount, initialF
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-700">{lead.imposition || '-'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-700">{lead.residence_status || '-'}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-700">{lead.postal_code || '-'}</td>
-                      {leadViewMode === 'manager' && (
+                      {isManagerOrAdmin && (
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-light text-gray-700">
                           {new Date(lead.updated_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                         </td>

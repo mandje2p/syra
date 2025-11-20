@@ -17,6 +17,8 @@ import BibliothequeBienviyance from './components/BibliothequeBienviyance';
 import NotificationsSidebar from './components/NotificationsSidebar';
 import Login from './components/Login';
 import { supabase } from './lib/supabase';
+import { getActiveProfile } from './services/profileService';
+import { UserProfile } from './types';
 
 function App() {
   const [currentPage, setCurrentPage] = useState('dashboard');
@@ -27,6 +29,7 @@ function App() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showPendingInClient, setShowPendingInClient] = useState(false);
   const [leadsFilter, setLeadsFilter] = useState<string | null>(null);
+  const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -43,8 +46,19 @@ function App() {
       }
     });
 
+    loadActiveProfile();
+
     return () => subscription.unsubscribe();
   }, []);
+
+  const loadActiveProfile = async () => {
+    try {
+      const profile = await getActiveProfile();
+      setCurrentProfile(profile);
+    } catch (err) {
+      console.error('Failed to load profile:', err);
+    }
+  };
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -67,7 +81,7 @@ function App() {
           setCurrentPage('leads');
         }} />;
       case 'leads':
-        return <Leads {...pageProps} initialFilter={leadsFilter} />;
+        return <Leads {...pageProps} initialFilter={leadsFilter} userRole={currentProfile?.profile_type || 'Conseiller'} />;
       case 'calendrier':
         return <Calendrier {...pageProps} />;
       case 'client':

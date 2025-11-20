@@ -124,9 +124,9 @@ export default function Client({ onNotificationClick, notificationCount, initial
         </div>
         <button
           onClick={onNotificationClick}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 hover:bg-white dark:hover:bg-gray-800 flex items-center justify-center transition-all hover:scale-105 shadow-sm relative"
+          className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 flex items-center justify-center transition-all hover:scale-105 relative flex-shrink-0"
         >
-          <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+          <Bell className="w-5 h-5 text-gray-900 dark:text-gray-300" />
           {notificationCount > 0 && (
             <span className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center text-white text-xs font-light shadow-lg animate-pulse">
               {notificationCount}

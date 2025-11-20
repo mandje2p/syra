@@ -467,8 +467,9 @@ export default function Utilisateurs({ onNotificationClick, notificationCount }:
                   <option value="marketing">Marketing</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-light text-gray-700 mb-2">Plaquette conseiller (PDF)</label>
+              {formData.role === 'signataire' && (
+                <div>
+                  <label className="block text-sm font-light text-gray-700 mb-2">Plaquette conseiller (PDF)</label>
                   <div className="border border-gray-200 rounded-2xl p-4 bg-white">
                     {!brochureFile ? (
                       <label className="flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 rounded-xl p-4 transition-colors">
@@ -511,12 +512,13 @@ export default function Utilisateurs({ onNotificationClick, notificationCount }:
                       </div>
                     )}
                   </div>
-              </div>
+                </div>
+              )}
               <div className="flex gap-3 mt-6">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 px-5 py-2 bg-white/80 border border-gray-200 text-gray-700 rounded-full text-sm font-light hover:bg-white transition-all"
+                  className="flex-1 px-5 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-light hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
                 >
                   Annuler
                 </button>
@@ -696,7 +698,7 @@ export default function Utilisateurs({ onNotificationClick, notificationCount }:
                 <button
                   type="button"
                   onClick={() => setShowEditModal(false)}
-                  className="flex-1 px-5 py-2 bg-white/80 border border-gray-200 text-gray-700 rounded-full text-sm font-light hover:bg-white transition-all"
+                  className="flex-1 px-5 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-light hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
                 >
                   Annuler
                 </button>
@@ -732,7 +734,7 @@ export default function Utilisateurs({ onNotificationClick, notificationCount }:
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(false)}
-                className="flex-1 px-5 py-2 bg-white/80 border border-gray-200 text-gray-700 rounded-full text-sm font-light hover:bg-white transition-all"
+                className="flex-1 px-5 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm font-light hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
               >
                 Annuler
               </button>

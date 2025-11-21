@@ -79,7 +79,7 @@ export default function LeadManagementModal({ onClose, lists }: LeadManagementMo
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[109]" onClick={onClose} />
       <div className="fixed inset-0 flex items-center justify-center z-[110] p-4">
-        <div className="bg-white dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-6xl pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-4xl pointer-events-auto" onClick={(e) => e.stopPropagation()}>
           <div className="p-5 border-b border-gray-200 dark:border-gray-700/30 flex items-center justify-between">
             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">Gestion des leads</h2>
             <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
@@ -135,51 +135,35 @@ export default function LeadManagementModal({ onClose, lists }: LeadManagementMo
                 <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
                   Action <span className="text-red-500">*</span>
                 </label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setMode('assign')}
-                    className={`p-3 rounded-2xl transition-all border-2 ${
+                    className={`px-4 py-2 rounded-2xl transition-all border-2 flex items-center gap-2 ${
                       mode === 'assign'
                         ? 'bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/30 dark:to-blue-800/20 border-blue-500 dark:border-blue-500'
                         : 'bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
                     }`}
                   >
-                    <div className="flex flex-col items-center gap-2">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        mode === 'assign'
-                          ? 'bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg'
-                          : 'bg-gray-200 dark:bg-gray-700'
-                      }`}>
-                        <UserPlus className={`w-5 h-5 ${mode === 'assign' ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} />
-                      </div>
-                      <span className={`text-xs font-light ${mode === 'assign' ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300'}`}>
-                        Attribuer
-                      </span>
-                    </div>
+                    <UserPlus className={`w-4 h-4 ${mode === 'assign' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                    <span className={`text-sm font-light ${mode === 'assign' ? 'text-blue-700 dark:text-blue-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                      Attribuer
+                    </span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setMode('remove')}
-                    className={`p-3 rounded-2xl transition-all border-2 ${
+                    className={`px-4 py-2 rounded-2xl transition-all border-2 flex items-center gap-2 ${
                       mode === 'remove'
                         ? 'bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-900/30 dark:to-orange-800/20 border-orange-500 dark:border-orange-500'
                         : 'bg-white dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 hover:border-orange-300 dark:hover:border-orange-700'
                     }`}
                   >
-                    <div className="flex flex-col items-center gap-2">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                        mode === 'remove'
-                          ? 'bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg'
-                          : 'bg-gray-200 dark:bg-gray-700'
-                      }`}>
-                        <UserMinus className={`w-5 h-5 ${mode === 'remove' ? 'text-white' : 'text-gray-500 dark:text-gray-400'}`} />
-                      </div>
-                      <span className={`text-xs font-light ${mode === 'remove' ? 'text-orange-700 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`}>
-                        Retirer
-                      </span>
-                    </div>
+                    <UserMinus className={`w-4 h-4 ${mode === 'remove' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-500 dark:text-gray-400'}`} />
+                    <span className={`text-sm font-light ${mode === 'remove' ? 'text-orange-700 dark:text-orange-300' : 'text-gray-700 dark:text-gray-300'}`}>
+                      Retirer
+                    </span>
                   </button>
                 </div>
               </div>

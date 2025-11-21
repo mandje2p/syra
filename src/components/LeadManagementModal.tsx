@@ -79,7 +79,7 @@ export default function LeadManagementModal({ onClose, lists }: LeadManagementMo
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[109]" onClick={onClose} />
       <div className="fixed inset-0 flex items-center justify-center z-[110] p-4 md:p-8">
-        <div className="bg-white dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto pointer-events-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="bg-white dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-5xl max-h-[90vh] overflow-y-auto pointer-events-auto" onClick={(e) => e.stopPropagation()}>
           <div className="p-6 border-b border-gray-200 dark:border-gray-700/30 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-900/95 backdrop-blur-xl rounded-t-3xl z-10">
             <h2 className="text-2xl font-light text-gray-900 dark:text-gray-100">Gestion des leads</h2>
             <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-all">
@@ -108,7 +108,7 @@ export default function LeadManagementModal({ onClose, lists }: LeadManagementMo
                   required
                 />
                 {showUserDropdown && filteredUsers.length > 0 && (
-                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 max-h-60 overflow-y-auto z-20">
+                  <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 max-h-80 overflow-y-auto z-[200]">
                     {filteredUsers.map((user) => (
                       <button
                         key={user.id}
@@ -185,82 +185,87 @@ export default function LeadManagementModal({ onClose, lists }: LeadManagementMo
                   </button>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
-                    Liste de leads <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={selectedList}
-                      onChange={(e) => setSelectedList(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light appearance-none cursor-pointer"
-                      required
-                    >
-                      <option value="">Veuillez choisir</option>
-                      {lists.map((list) => (
-                        <option key={list.id} value={list.id}>
-                          {list.name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
-                    Nombre de leads à attribuer
-                  </label>
-                  <input
-                    type="number"
-                    value={numberOfLeads}
-                    onChange={(e) => setNumberOfLeads(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light"
-                    placeholder="100"
-                    min="1"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
-                    Région (optionnel)
-                  </label>
-                  <div className="relative">
-                    <select
-                      value={selectedRegion}
-                      onChange={(e) => setSelectedRegion(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light appearance-none cursor-pointer"
-                    >
-                      {regions.map((region) => (
-                        <option key={region.name} value={region.name}>
-                          {region.name}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
-                  </div>
-                  {currentRegion && (
-                    <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800 flex items-start gap-2">
-                      <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                      <p className="text-sm text-gray-600 dark:text-gray-400 font-light italic">
-                        La région sélectionnée a {currentRegion.availableLeads.toLocaleString()} leads disponibles.
-                      </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
+                      Liste de leads <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedList}
+                        onChange={(e) => setSelectedList(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light appearance-none cursor-pointer"
+                        required
+                      >
+                        <option value="">Veuillez choisir</option>
+                        {lists.map((list) => (
+                          <option key={list.id} value={list.id}>
+                            {list.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
                     </div>
-                  )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
+                      Nombre de leads à attribuer
+                    </label>
+                    <input
+                      type="number"
+                      value={numberOfLeads}
+                      onChange={(e) => setNumberOfLeads(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light"
+                      placeholder="100"
+                      min="1"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
-                    Département (optionnel)
-                  </label>
-                  <input
-                    type="text"
-                    value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light"
-                    placeholder="Ex: 08"
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
+                      Région (optionnel)
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={selectedRegion}
+                        onChange={(e) => setSelectedRegion(e.target.value)}
+                        className="w-full px-4 py-2.5 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light appearance-none cursor-pointer"
+                      >
+                        {regions.map((region) => (
+                          <option key={region.name} value={region.name}>
+                            {region.name}
+                          </option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-gray-400 absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-light text-gray-700 dark:text-gray-300 mb-2">
+                      Département (optionnel)
+                    </label>
+                    <input
+                      type="text"
+                      value={department}
+                      onChange={(e) => setDepartment(e.target.value)}
+                      className="w-full px-4 py-2.5 bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400/50 font-light"
+                      placeholder="Ex: 08"
+                    />
+                  </div>
                 </div>
+
+                {currentRegion && (
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800 flex items-start gap-2">
+                    <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-light italic">
+                      La région sélectionnée a {currentRegion.availableLeads.toLocaleString()} leads disponibles.
+                    </p>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>

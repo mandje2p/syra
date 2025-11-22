@@ -5,6 +5,17 @@ export async function getAllProfiles(): Promise<UserProfile[]> {
   const { data, error } = await supabase
     .from('user_profiles')
     .select('*')
+    .neq('profile_type', 'Signataire')
+    .order('profile_type', { ascending: true });
+
+  if (error) throw new Error(`Erreur lors du chargement des profils: ${error.message}`);
+  return data || [];
+}
+
+export async function getAllProfilesIncludingSignataires(): Promise<UserProfile[]> {
+  const { data, error } = await supabase
+    .from('user_profiles')
+    .select('*')
     .order('profile_type', { ascending: true });
 
   if (error) throw new Error(`Erreur lors du chargement des profils: ${error.message}`);

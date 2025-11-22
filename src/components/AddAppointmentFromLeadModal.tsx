@@ -377,7 +377,7 @@ export default function AddAppointmentFromLeadModal({ onClose, lead }: AddAppoin
                     </div>
 
                     {/* Créneaux disponibles - 40% */}
-                    <div className="flex-[4] bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl p-3 flex flex-col h-[320px]">
+                    <div className="flex-[4] bg-white dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700/50 rounded-2xl p-3 flex flex-col h-[460px]">
                       {selectedDate ? (
                         <>
                           <h4 className="text-xs font-light text-gray-900 dark:text-gray-100 mb-2 flex-shrink-0">

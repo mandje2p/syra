@@ -2,6 +2,7 @@ import { X, Clock, MapPin, Bell, ChevronLeft, ChevronRight, Search, Video } from
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Lead } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface AddAppointmentFromLeadModalProps {
   onClose: () => void;
@@ -125,7 +126,7 @@ export default function AddAppointmentFromLeadModal({ onClose, lead }: AddAppoin
     setLocation(meetLink);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!selectedSignataire || !selectedDate || !selectedTimeSlot) {
@@ -133,8 +134,34 @@ export default function AddAppointmentFromLeadModal({ onClose, lead }: AddAppoin
       return;
     }
 
-    onAppointmentCreate(lead.id);
-    onClose();
+    try {
+      const startDateTime = new Date(selectedDate);
+      const [hours, minutes] = selectedTimeSlot.split(':').map(Number);
+      startDateTime.setHours(hours, minutes, 0, 0);
+
+      const endDateTime = new Date(startDateTime);
+      endDateTime.setHours(endDateTime.getHours() + 1);
+
+      const { error: appointmentError } = await supabase
+        .from('appointments')
+        .insert({
+          lead_id: lead.id,
+          user_id: selectedSignataire,
+          title: title,
+          description: notes || '',
+          start_time: startDateTime.toISOString(),
+          end_time: endDateTime.toISOString(),
+          status: 'planifié'
+        });
+
+      if (appointmentError) throw appointmentError;
+
+      onAppointmentCreate(lead.id);
+      onClose();
+    } catch (error) {
+      console.error('Error creating appointment:', error);
+      alert('Erreur lors de la création du rendez-vous');
+    }
   };
 
   const days = getDaysInMonth(currentMonth);
